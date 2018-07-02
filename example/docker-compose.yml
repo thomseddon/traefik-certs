@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  traefik:
+    image: traefik
+    command: -c /traefik.toml --logLevel=DEBUG
+    ports:
+      - "8085:80"
+      - "8086:8080"
+    networks:
+      - traefik
+    volumes:
+      - traefik_acme:/etc/traefik/acme
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  traefik-certs:
+    image: thomseddon/traefik-certs
+    environment:
+      - ACME_PATH=/acme
+      - CERT_PATH=/certs
+    volumes:
+      - traefik_acme:/acme
+      - certs:/certs
+    networks:
+      - traefik
+
+networks:
+  traefik:
+
+volumes:
+  traefik_acme:
+  certs:
