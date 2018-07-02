@@ -38,6 +38,18 @@ func TestBuildCerts(t *testing.T) {
   if string(expected) != string(output) {
     t.Error("Generated chain does not match expected output")
   }
+
+  // Check key
+  output, err = ioutil.ReadFile("test/output/example.com.key")
+  if err != nil {
+    t.Error("Error reading key", err)
+  }
+  expected, _ = ioutil.ReadFile("test/example.key")
+  if string(expected) != string(output) {
+    t.Error("Generated key does not match expected output")
+  }
+  t.Log(len(output))
+  t.Log(len(expected))
 }
 
 func TestCleanup(t *testing.T) {

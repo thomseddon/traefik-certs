@@ -21,6 +21,7 @@ type CertificateDomain struct {
 type Certificate struct {
   Domain CertificateDomain `json:"Domain"`
   Certificate string `json:"Certificate"`
+  Key string `json:"Key"`
 }
 
 type Acme struct {
@@ -72,11 +73,26 @@ func buildCerts() {
       fmt.Println("Error writing file", name)
     }
 
-    // Write cert only
+    // Write cert
     name = fmt.Sprintf("%s/%s.crt", certPath, cert.Domain.Main)
     fmt.Println("Writing file", name)
     parts := strings.Split(string(decoded), "\n\n")
     err = ioutil.WriteFile(name, []byte(parts[0]), 0644)
+    if err != nil {
+      fmt.Println("Error writing file", name)
+    }
+
+    // Decode key
+    decoded, err = base64.StdEncoding.DecodeString(cert.Key)
+    if err != nil {
+      fmt.Println("Unable to decode certificate", cert.Domain.Main)
+      continue
+    }
+
+    // Write key
+    name = fmt.Sprintf("%s/%s.key", certPath, cert.Domain.Main)
+    fmt.Println("Writing file", name)
+    err = ioutil.WriteFile(name, []byte(decoded), 0644)
     if err != nil {
       fmt.Println("Error writing file", name)
     }
